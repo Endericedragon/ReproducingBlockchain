@@ -1,0 +1,11 @@
+body{
+    margin:auto;
+    top:0px;
+    left: 0px;
+    right: 0px;
+    bottom: 0px;
+    width: 98%;
+    height: 98%;
+    position: absolute;
+    overflow: hidden;
+}

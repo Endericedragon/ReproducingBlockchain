@@ -1,0 +1,75 @@
+=============== Nov 16, 2022 (CST) ===============
+20:03:33.067775 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:03:33.076715 db@open opening
+20:03:33.084779 version@stat F·[] S·0B[] Sc·[]
+20:03:33.089864 db@janitor F·2 G·0
+20:03:33.089977 db@open done T·13.101375ms
+20:03:33.095605 db@close closing
+20:03:33.095863 db@close done T·248.528µs
+=============== Nov 16, 2022 (CST) ===============
+20:03:33.261427 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:03:33.262214 version@stat F·[] S·0B[] Sc·[]
+20:03:33.262355 db@open opening
+20:03:33.262547 journal@recovery F·1
+20:03:33.292724 journal@recovery recovering @1
+20:03:33.297620 memdb@flush created L0@2 N·10 S·620B "H\x87\xe1..\x1a\xf1\x9a,v3":"r\x00\x00..\x1a\xf1\x9a,v5"
+20:03:33.309675 version@stat F·[1] S·620B[620B] Sc·[0.25]
+20:03:33.318678 db@janitor F·3 G·0
+20:03:33.319020 db@open done T·56.631302ms
+=============== Nov 16, 2022 (CST) ===============
+20:08:15.523636 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:08:15.526239 version@stat F·[1] S·620B[620B] Sc·[0.25]
+20:08:15.526449 db@open opening
+20:08:15.526782 journal@recovery F·1
+20:08:15.530754 journal@recovery recovering @3
+20:08:15.534981 memdb@flush created L0@5 N·1 S·192B "Dat..ion,v12":"Dat..ion,v12"
+20:08:15.535606 version@stat F·[2] S·812B[812B] Sc·[0.50]
+20:08:15.547681 db@janitor F·4 G·0
+20:08:15.548953 db@open done T·21.321018ms
+20:08:15.552006 db@close closing
+20:08:15.552181 db@close done T·173.883µs
+=============== Nov 16, 2022 (CST) ===============
+20:08:15.688399 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:08:15.688773 version@stat F·[2] S·812B[812B] Sc·[0.50]
+20:08:15.688813 db@open opening
+20:08:15.688903 journal@recovery F·1
+20:08:15.699298 journal@recovery recovering @6
+20:08:15.703671 memdb@flush created L0@8 N·1 S·343B "eth..\x1a\xf1\x9a,v14":"eth..\x1a\xf1\x9a,v14"
+20:08:15.716292 version@stat F·[3] S·1KiB[1KiB] Sc·[0.75]
+20:08:15.728775 db@janitor F·5 G·0
+20:08:15.728938 db@open done T·40.100992ms
+20:20:23.849539 db@close closing
+20:20:23.859165 db@close done T·9.622174ms
+=============== Nov 16, 2022 (CST) ===============
+20:20:31.497969 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:20:31.505231 version@stat F·[3] S·1KiB[1KiB] Sc·[0.75]
+20:20:31.509993 db@open opening
+20:20:31.510379 journal@recovery F·1
+20:20:31.510797 journal@recovery recovering @9
+20:20:31.534566 memdb@flush created L0@11 N·1948 S·101KiB "H\x00E..\xe6S\xc7,v864":"ȕn..\x1ć,v1961"
+20:20:31.537066 version@stat F·[4] S·103KiB[103KiB] Sc·[1.00]
+20:20:31.546245 db@janitor F·6 G·0
+20:20:31.546327 db@open done T·36.246138ms
+20:20:31.546620 table@compaction L0·3 -> L1·0 S·102KiB Q·1964
+20:20:31.547757 db@close closing
+20:20:31.554771 table@build created L1@14 N·1310 S·77KiB "H\x00E..\xe6S\xc7,v864":"ȕn..\x1ć,v1961"
+20:20:31.554827 table@build exiting
+20:20:31.555040 table@build revert @14
+20:20:31.555369 db@close done T·7.608958ms
+=============== Nov 16, 2022 (CST) ===============
+20:20:31.702444 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:20:31.704071 version@stat F·[4] S·103KiB[103KiB] Sc·[1.00]
+20:20:31.704256 db@open opening
+20:20:31.704423 journal@recovery F·1
+20:20:31.717942 journal@recovery recovering @12
+20:20:31.720808 memdb@flush created L0@14 N·1 S·343B "eth..\x1a\xf1\x9a,v1965":"eth..\x1a\xf1\x9a,v1965"
+20:20:31.731946 version@stat F·[5] S·103KiB[103KiB] Sc·[1.25]
+20:20:31.738828 db@janitor F·7 G·0
+20:20:31.739629 db@open done T·35.302603ms
+20:20:31.739686 table@compaction L0·4 -> L1·0 S·103KiB Q·1966
+20:20:31.754126 table@build created L1@17 N·1310 S·77KiB "H\x00E..\xe6S\xc7,v864":"ȕn..\x1ć,v1961"
+20:20:31.754380 version@stat F·[1 1] S·77KiB[192B 77KiB] Sc·[0.25 0.00]
+20:20:31.756404 table@compaction committed F-3 S-26KiB Ke·0 D·650 T·16.633309ms
+20:20:31.756673 table@remove removed @11
+20:20:31.757001 table@remove removed @8
+20:20:31.757078 table@remove removed @2

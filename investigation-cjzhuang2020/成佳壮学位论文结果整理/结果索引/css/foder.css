@@ -1,0 +1,56 @@
+/* CSS Document */
+
+.foder{
+	width:600px;
+	height:1000px;
+	margin:0 auto;
+	border: thin solid #000000;
+	position:relative;
+	top:0;
+	left:0;
+	overflow:auto;
+}
+.pack {
+	background-position: 0px -204px;
+}
+.packC {
+	background-position: 0px -226px;
+}
+.open{
+	background-position: -43px -179px;
+}
+.close{
+	background-position: -43px -201px;
+}
+.btn{
+    width:22px;
+    height:20px;
+    display:block;
+	background-image: url(../images/btn_icon.gif);
+	float:left;
+}
+.none{
+display:none;
+}
+.block{
+display:block;
+}
+
+.ful{
+	list-style-type: none;
+	padding-left:22px;
+	margin-left:0px;
+
+}
+.ful li{
+position:relative;
+font-size:12px;
+line-height:20px;
+}
+.ftext{
+margin-left:5px;
+}
+.fcont {
+	font-family: "ËÎÌו";
+	margin-left:10px;
+}

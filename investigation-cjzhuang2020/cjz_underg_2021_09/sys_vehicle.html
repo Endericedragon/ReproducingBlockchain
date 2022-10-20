@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<head>
+    <title id="title">vehicle</title>
+
+	<style>
+		html,body{
+			width: 100%;
+			height: 100%;
+		}
+		#row1{float:left;display: inline ;}
+		body{background: #ecf0f1;color: #34495e;text-shadow: white 1px 1px 1px;}.value{text-align: middle;font-weight: bold;width: 210px;line-height: 60px;margin: -18px auto;letter-spacing: -0.07em;text-shadow: white 2px 2px 2px;}input[type="range"] {display: block;-webkit-appearance: none;background-color: #bdc3c7;width: 100%;height: 10px;border-radius: 5px;margin: 5px auto;outline: 0;}input[type="range"]::-webkit-slider-thumb {-webkit-appearance: none;background-color: #e74c3c;width: 30px;height: 30px;border-radius: 50%;border: 2px solid white;cursor: pointer;transition: 0.3s ease-in-out;}.range{position:relative;width:60%;margin:0 auto;} 
+		#map{width: 100%;height:80%}
+	</style>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+	<link rel="stylesheet" href="leaflet.css" />
+	<link rel="stylesheet" href="leaflet.label.css" />
+	<script src="leaflet-src-Geohash.js"></script>
+	<script src="leaflet.label-src.js"></script>
+	<script src="leaflet.label.js"></script>
+	<script src="OSMBuildings-Leaflet.debug.js"></script>
+
+	<script src="./node_modules/web3/dist/web3.min.js"></script>
+	<script src="./node_modules/flatqueue/index.js"></script>
+	<script src="./geohash-new.js"></script>
+	<script src="./geolib.js"></script>
+	<script src="./common.js"></script>
+	<script src="GeohashLayer.GeoJSON.js"></script>
+	<script src="https://s3.pstatp.com/cdn/expire-1-M/jquery/3.2.1/jquery.min.js"></script>
+
+	<script src="./getRoads.js"></script>
+	<script src="./GetHighway.js"></script>
+	<script src="./vehicles.js"></script>
+	<script src="./gpsarray.js"></script>
+	<script src="./routes.js"></script>
+	<script src="./verifyRecord.js"></script>
+	<script src="./waysall.js"></script>
+	<script src="./gradientColor.js"></script>
+
+	<script  src="./mapContract.js"></script>
+	<script src="./trafficContract.js"></script>
+
+	<script src="a-star-search.js"></script>
+<script type="text/javascript">
+
+//Map contract
+var mapContract;
+var web3Map;
+//Traffic contract
+var trafficContract;
+var web3Traffic;
+
+var vehicleId;
+var vehiclePosition;
+
+var passengerId;
+var passengerGeohash;
+var endGeohash;
+
+
+var vehicleLayers = [];
+var togetherLayers  = [];
+var vehicleGroup;
+var togetherGroup;
+
+var vehiclePoint;
+var startPoint;
+var endPoint;
+
+
+//Contract Init
+function initContract() {
+    if (typeof web3 !== 'undefined') {
+	    web3Map = new Web3(web3.currentProvider);
+	    web3Traffic = new Web3(web3.currentProvider); 
+	} else {
+		web3Map = new Web3(new Web3.providers.WebsocketProvider("ws://127.0.0.1:8548"));
+	    web3Traffic = new Web3(new Web3.providers.WebsocketProvider("ws://127.0.0.1:8548"));
+	}
+	mapContract = new web3Map.eth.Contract(mapContractAbi,mapContractAddress);
+	trafficContract = new web3Traffic.eth.Contract(trafficContractAbi,trafficContractAddress);
+	//event
+	trafficContract.events.Myevent(function(error, event){
+		if(error != null){
+			console.log("Myevent_error: ",error);
+		}
+		//whether to pick up the passenger
+		if(event.returnValues.vehicleId.slice(0,42) == vehicleId.toLowerCase()){
+			console.log(event);
+			$("#Myevent").val("whether to pick up the passenger?");
+			passengerId = event.returnValues.passengerId;
+			passengerGeohash = web3Map.utils.hexToAscii(event.returnValues.passengerGeohash).slice(0,11);
+			startPoint = L.polyline([passengerGeohash,passengerGeohash],{color:"#00CCFF",fillColor:"#00CCFF",fillOpacity:1, weight:10});
+			map.addLayer(startPoint);
+			//可以根据信誉值概率选择接还是不接
+			pickUp();
+		}
+	})
+
+	//监听乘客付款事件
+	trafficContract.events.payEvent(function(error, event){
+		if(error != null){
+			console.log("payEvent_error: ",error);
+		}
+		if(event.returnValues.vehicleId.slice(0,42) == vehicleId.toLowerCase()){
+			console.log("payEvent: " + vehicleId + "乘客已付款");
+			trafficContract.methods.setVehicleStatusEmpty(vehicleId).send({from: vehicleId, gas: 500000,position:"w3511111111111",txtime:278000}).then(function(result){
+				
+				trafficContract.methods.setVehicle(vehicleId, web3Map.utils.asciiToHex(endGeohash)).send({from: vehicleId, gas: 500000,position:"w3511111111111",txtime:278000}).then(function(result){
+					$("#Myevent").val("set the status to empty");
+					console.log("置状态为空车");
+					vehiclePosition = endGeohash;
+					map.removeLayer(vehiclePoint);
+					map.removeLayer(startPoint);
+					map.removeLayer(endPoint);
+					vehicleGroup.clearLayers();
+					vehicleLayers = [];
+					togetherGroup.clearLayers();
+					togetherLayers = [];
+					vehiclePoint = L.polyline([endGeohash,endGeohash],{color:"#00FF00",fillColor:"#00FF00",fillOpacity:1, weight:12});
+					map.addLayer(vehiclePoint)
+				})
+			});
+		}
+	})
+
+	//监听乘客上车事件
+	trafficContract.events.boardEvent(function(error, event){
+		if(error != null){
+			console.log("boardEvent_error: ",error);
+		}
+		if(event.returnValues.vehicleId.slice(0,42) == vehicleId.toLowerCase()){
+			console.log("boardEvent: " + vehicleId + "乘客已上车");
+			$("#Myevent").val("vehicle picked up the passenger");
+			console.log("执行了调度算法,车辆到达乘客所在位置");
+			manageToEnd();
+		}
+	})
+	console.log("mapContract", mapContract);
+	console.log("trafficContract", trafficContract);
+	console.log("OK!");
+}
+initContract();
+getRoads("wx4e");
+
+//map
+var map;
+
+function getTime() {
+    var t_date = new Date();
+    var t_time = t_date.getTime();            
+    return t_time;
+}
+
+function getVehicleById(loginId){
+	vehicles = JSON.parse(vehicles);
+	for(let i = 0; i < vehicles.length; i++){
+		if(vehicles[i].vehicleId == loginId){
+			vehicleId = vehicles[i].vehicleId;
+			vehiclePosition = vehicles[i].vehiclePosition;
+			$("#Myevent").val("获得了车辆信息！");
+			console.log("获得了车辆信息！");
+		}else{
+			continue;
+		}
+	}
+}
+
+async function initVehicle(){
+	console.log("车辆开始上传位置")
+	await trafficContract.methods.initVehicle(vehicleId, web3Map.utils.asciiToHex(vehiclePosition)).send({from: vehicleId, gas: 500000,position:"w3511111111111",txtime:278000});
+	// console.log("vehicleId: ",vehicleId)
+	// console.log("vehicleId2: ",vehicleId2)
+	vehiclePoint = L.polyline([vehiclePosition,vehiclePosition],{color:"#00FF00",fillColor:"#00FF00",fillOpacity:1, weight:10});
+	map.addLayer(vehiclePoint);
+	$("#Myevent").val("车辆上传了位置");
+	console.log("车辆上传了位置")
+}
+
+let astarTimes = [];
+setTimeout(writeExcel, 1000*60*3);
+
+function writeExcel(){
+	var table = '<table border="1px" cellspacing="0" cellpadding="0">';
+            table += '<thead>';
+            table += '<th>astarTime2</th>';
+            table += '<th>countFrag</th>';
+            table += '</thead>';
+            table += '<tbody>';
+
+
+            var _body = "";
+            for (var row = 0; row < astarTimes.length; row++) {
+                _body += '<tr>';
+                _body += '<td>';
+                _body += `${astarTimes[row].astarTime2}`;
+                _body += '</td>';
+                _body += '<td>';
+                _body += `${astarTimes[row].countFrag}`;
+                _body += '</td>';
+                _body += '</tr>';
+            }
+            table += _body;
+            table += '</tbody>';
+            table += '</table>';
+            excel(table, "astarTimes.xlsx");
+}
+function excel(data, filename) {
+            var html =
+                "<html xmlns:o='urn:schemas-microsoft-com:office:office' xmlns:x='urn:schemas-microsoft-com:office:excel' xmlns='http://www.w3.org/TR/REC-html40'>";
+            html += '<meta http-equiv="content-type" content="application/vnd.ms-excel; charset=UTF-8">';
+            html += '<meta http-equiv="content-type" content="application/vnd.ms-excel';
+            html += '; charset=UTF-8">';
+            html += "<head>";
+            html += "</head>";
+            html += "<body>";
+            html += data;
+            html += "</body>";
+            html += "</html>";
+            var uri = 'data:application/vnd.ms-excel;charset=utf-8,' + encodeURIComponent(html);
+            var link = document.createElement("a");
+            link.href = uri;
+            link.style = "visibility:hidden";
+            link.download = `${filename}`; 
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+}
+
+
+//确认接乘客
+async function pickUp(){
+	
+	if(vehiclePosition == passengerGeohash){
+		//store route
+		trafficContract.methods.storeRoutes(0,vehicleId, passengerId, []).send({ from: vehicleId, gas: 8000000,position: vehiclePosition, txtime:Date.now()}).then(function(result){
+			console.log("存储路径成功");
+		},function(error){
+			console.log("存储路径失败:",error);
+		});
+	}else{
+		let astarTime1 = Date.now()
+
+		mapContract.methods.astar(web3Map.utils.asciiToHex(vehiclePosition), web3Map.utils.asciiToHex(passengerGeohash)).call({ from: vehicleId, gas: 5000000000}).then(function(result){
+			let astarTime2 = Date.now() - astarTime1
+			let countFrag = 0;
+			for(let i = 0; i < result[0].length; i++){
+				if(result[0][i].toString() != "0x0000000000000000000000000000000000000000000000000000000000000000"){
+					countFrag++;
+				}
+			}
+			astarTimes.push({
+				astarTime2,
+				countFrag
+			})
+			console.log("路径规划用时：", astarTime2, "ms")
+			console.log("astar-result: ",result)
+			let astarOriginRoute = result[0];
+			let costAll = Number(result[1]);
+			//store route
+			trafficContract.methods.storeRoutes(costAll,vehicleId, passengerId, astarOriginRoute).send({ from: vehicleId, gas: 8000000,position:"w3511111111111",txtime:278000}).then(function(result){
+				console.log("存储路径成功");
+			},function(error){
+				console.log("存储路径失败:",error);
+			});
+			let astarRoute = [];
+			for(let i = 0; i < result[0].length; i++){
+				if(result[0][i].toString() != "0x0000000000000000000000000000000000000000000000000000000000000000"){
+					let temp = web3Map.utils.hexToAscii(result[0][i]).slice(0, 11)
+					astarRoute.push(temp)
+				}
+				
+			}
+			astarRoute.reverse()
+			console.log("astar: ", astarRoute)
+			//add route point to map
+			function draw2(p, q){
+				if(q == astarRoute.length){
+					return 1
+				}
+				function doit2(geohash1, geohash2){
+					console.log("geohash1, geohash2: ", geohash1, geohash2)
+					let route = L.polyline([geohash1,geohash2],{color:"#FFFF00",fillColor:"#FFFF00",fillOpacity:1, weight:7});
+					vehicleLayers.push(route);
+					// map.addLayer(route)
+					// sleep(100)
+				}
+				setTimeout(doit2(astarRoute[p], astarRoute[q]), 0)
+				draw2(p+1, q+1)
+			}
+			draw2(0, 1)
+			vehicleGroup = L.layerGroup(vehicleLayers);
+			map.addLayer(vehicleGroup);
+		}, function(err){
+			console.error("astarErr: ", err)
+		})
+	}
+}
+
+async function noPickUp(){
+	console.log("选择不去接乘客");
+	trafficContract.methods.setRejectVehicleStatus(vehicleId, passengerId).send({ from: vehicleId, gas: 5000000000,position:"w3511111111111",txtime:278000}).then(function(result){
+		console.log("状态转为空车");
+	})
+}
+
+async function manageToEnd(){
+	$("#Myevent").val("从合约获取乘客目的地");
+	console.log("从合约获取乘客目的地")
+	let astarTime1 = Date.now()
+	//车辆接到乘客后通过合约获得其目的地
+	trafficContract.methods.getPassengerEnd(passengerId).call({ from: vehicleId, gas: 50000000}).then(function(result){
+		endGeohash = web3Map.utils.hexToAscii(result).slice(0, 11);
+		console.log("目的地坐标:", endGeohash);
+		endPoint = L.polyline([endGeohash,endGeohash],{color:"#FF0000",fillColor:"#FF0000",fillOpacity:1, weight:10});
+		map.addLayer(endPoint);
+		mapContract.methods.astar(web3Map.utils.asciiToHex(passengerGeohash), web3Map.utils.asciiToHex(endGeohash)).call({ from: vehicleId, gas: 180000000}).then(function(result){
+			let astarTime2 = Date.now() - astarTime1
+			let countFrag = 0;
+			for(let i = 0; i < result[0].length; i++){
+				if(result[0][i].toString() != "0x0000000000000000000000000000000000000000000000000000000000000000"){
+					countFrag++;
+				}
+			}
+			astarTimes.push({
+				astarTime2,
+				countFrag
+			})
+			console.log("路径规划用时：", astarTime2, "ms")
+			console.log("astar-result: ",result)
+			let astarOriginRoute = result[0];
+			let costAll = Number(result[1]);
+			trafficContract.methods.storeRoutes(costAll,vehicleId, passengerId, astarOriginRoute).send({ from: vehicleId, gas: 5000000,position:"w3511111111111",txtime:278000}).then(function(result){
+				console.log("存储路径成功");
+			});
+			let astarRoute = []
+			for(let i = 0; i < result[0].length; i++){
+				if(result[0][i].toString() != "0x0000000000000000000000000000000000000000000000000000000000000000"){
+					let temp = web3Map.utils.hexToAscii(result[0][i]).slice(0, 11)
+					astarRoute.push(temp)
+				}
+			}
+			astarRoute.reverse();
+			console.log("astar: ", astarRoute)
+			//add route point to map
+			function draw2(p, q){
+				if(q == astarRoute.length){
+					return 1;
+				}
+				function doit2(geohash1, geohash2){
+					console.log("geohash1, geohash2: ", geohash1, geohash2)
+					let route = L.polyline([geohash1,geohash2],{color:"#00FF00",fillColor:"#00FF00",fillOpacity:1, weight:7});
+					togetherLayers.push(route);
+					// map.addLayer(route);
+					// sleep(200);
+				}
+				setTimeout(doit2(astarRoute[p], astarRoute[q]), 0);
+				draw2(p+1, q+1);
+			}
+			draw2(0, 1);
+			togetherGroup = L.layerGroup(togetherLayers);
+			map.addLayer(togetherGroup);
+			$("#Myevent").val("vehicle reached the end");
+			console.log("执行了调度算法,车辆将乘客送到了终点");
+		}, function(err){
+			console.error("astarErr: ", err);
+		})
+	})
+}
+
+function sleep(delay) {
+    var start = new Date().getTime();
+    while (new Date().getTime() < start + delay);
+}
+
+</script>
+</head>
+<body>
+
+geohash:
+<input type='text' name='hash' id='geohash'/>
+<input type="button" style="width: 120px; height: 30px" value="get roads" onclick="getRoads(document.getElementById('geohash').value)">
+<br/>
+登录车辆信息：
+<input type='text' name='id' id='getVehicleById1'/>
+<input type="button" id='getVehicleById2' style="width: 120px; height: 30px" value="loginVehicle" onclick="getVehicleById(document.getElementById('getVehicleById1').value)">
+
+<table>
+	<tr>
+		<td>
+			初始化合约：
+			<button id="initContract">initContract</button>
+		</td>
+		<td>
+			初始化车辆账户和位置:
+			<button class="initVehicle">initVehicle</button>
+		</td>
+	</tr>
+</table>
+<table>
+	<tr>
+		<td>
+			确认接客:
+			<button class="pickUp">pickUp</button>
+		</td>
+		<td>
+			不接客:
+			<button class="noPickUp">noPickUp</button>
+		</td>
+		<td>
+			导航到终点:
+			<button class="manageToEnd">manageToEnd</button>
+		</td>
+	</tr>
+</table>
+<div>
+	<input type="button" id="Myevent" value="" style="width: 300px; height: 40px">
+</div>
+<script>
+	$(".initVehicle").click(function(){
+		initVehicle();
+	});
+	$(".pickUp").click(function(){
+		pickUp();
+	});
+	$(".noPickUp").click(function(){
+		noPickUp();
+	});
+	$(".manageToEnd").click(function(){
+		manageToEnd();
+	});
+	$("#initTrace").click(async function(){
+		await initTrace();
+	});
+	$("#initContract").click(function() {
+		initContract();
+	});
+	$("#printQualityRecord").click(function() {
+		printQualityRecord();
+	});
+</script>
+
+
+<div id="map"></div>	
+	<script>
+		// setView设置地图放缩大小和中心点
+		var map = L.map('map',{maxZoom:18,minZoom:1}).setView("wx4ep",12);
+	</script>
+
+	<script src="water.js"></script>	
+	<script src="ways.js"></script>
+	<script src="landcover.js"></script>	
+	<script src="railway.js"></script>	
+	<script src="mapConfig.js"></script>
+
+</body>
+</html>

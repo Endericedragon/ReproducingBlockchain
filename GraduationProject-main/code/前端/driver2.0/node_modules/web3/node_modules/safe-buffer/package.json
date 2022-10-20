@@ -1,0 +1,85 @@
+{
+  "_from": "safe-buffer@5.1.2",
+  "_id": "safe-buffer@5.1.2",
+  "_inBundle": false,
+  "_integrity": "sha1-mR7GnSluAxN0fVm9/St0XDX4go0=",
+  "_location": "/web3/safe-buffer",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "safe-buffer@5.1.2",
+    "name": "safe-buffer",
+    "escapedName": "safe-buffer",
+    "rawSpec": "5.1.2",
+    "saveSpec": null,
+    "fetchSpec": "5.1.2"
+  },
+  "_requiredBy": [
+    "/web3/base-x",
+    "/web3/browserify-aes",
+    "/web3/browserify-des",
+    "/web3/bs58check",
+    "/web3/cipher-base",
+    "/web3/content-disposition",
+    "/web3/create-hmac",
+    "/web3/ethereum-cryptography",
+    "/web3/evp_bytestokey",
+    "/web3/express",
+    "/web3/md5.js",
+    "/web3/minipass",
+    "/web3/parse-asn1",
+    "/web3/pbkdf2",
+    "/web3/public-encrypt",
+    "/web3/randombytes",
+    "/web3/randomfill",
+    "/web3/request",
+    "/web3/sha.js",
+    "/web3/swarm-js/got",
+    "/web3/tar",
+    "/web3/tunnel-agent",
+    "/web3/util",
+    "/web3/ws"
+  ],
+  "_resolved": "https://registry.npm.taobao.org/safe-buffer/download/safe-buffer-5.1.2.tgz",
+  "_shasum": "991ec69d296e0313747d59bdfd2b745c35f8828d",
+  "_spec": "safe-buffer@5.1.2",
+  "_where": "/home/ifpop/.nvm/versions/node/v12.18.4/lib/node_modules/web3/node_modules/express",
+  "author": {
+    "name": "Feross Aboukhadijeh",
+    "email": "feross@feross.org",
+    "url": "http://feross.org"
+  },
+  "bugs": {
+    "url": "https://github.com/feross/safe-buffer/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Safer Node.js Buffer API",
+  "devDependencies": {
+    "standard": "*",
+    "tape": "^4.0.0"
+  },
+  "homepage": "https://github.com/feross/safe-buffer",
+  "keywords": [
+    "buffer",
+    "buffer allocate",
+    "node security",
+    "safe",
+    "safe-buffer",
+    "security",
+    "uninitialized"
+  ],
+  "license": "MIT",
+  "main": "index.js",
+  "name": "safe-buffer",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/feross/safe-buffer.git"
+  },
+  "scripts": {
+    "test": "standard && tape test/*.js"
+  },
+  "types": "index.d.ts",
+  "version": "5.1.2"
+}

@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<head>
+    <title id="title">passenger</title>
+
+	<style>
+		html,body{
+			width: 100%;
+			height: 100%;
+		}
+		#row1{float:left;display: inline ;}
+		body{background: #ecf0f1;color: #34495e;text-shadow: white 1px 1px 1px;}.value{text-align: middle;font-weight: bold;width: 210px;line-height: 60px;margin: -18px auto;letter-spacing: -0.07em;text-shadow: white 2px 2px 2px;}input[type="range"] {display: block;-webkit-appearance: none;background-color: #bdc3c7;width: 100%;height: 10px;border-radius: 5px;margin: 5px auto;outline: 0;}input[type="range"]::-webkit-slider-thumb {-webkit-appearance: none;background-color: #e74c3c;width: 30px;height: 30px;border-radius: 50%;border: 2px solid white;cursor: pointer;transition: 0.3s ease-in-out;}.range{position:relative;width:60%;margin:0 auto;} 
+		#map{width: 100%;height:80%}
+	</style>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+	<link rel="stylesheet" href="leaflet.css" />
+	<link rel="stylesheet" href="leaflet.label.css" />
+	<script src="leaflet-src-Geohash.js"></script>
+	<script src="leaflet.label-src.js"></script>
+	<script src="leaflet.label.js"></script>
+	<script src="OSMBuildings-Leaflet.debug.js"></script>
+
+	<script src="./node_modules/web3/dist/web3.min.js"></script>
+	<script src="./node_modules/flatqueue/index.js"></script>
+	<script src="./geohash-new.js"></script>
+	<script src="./geolib.js"></script>
+	<script src="./common.js"></script>
+	<script src="GeohashLayer.GeoJSON.js"></script>
+	<script src="https://s3.pstatp.com/cdn/expire-1-M/jquery/3.2.1/jquery.min.js"></script>
+
+	<script src="./getRoads.js"></script>
+	<script src="./GetHighway.js"></script>
+
+    <script src="./prefix_mapContract.js"></script>
+
+<script type="text/javascript">
+
+//Map contract
+var mapContract;
+var web3Map;
+var account = "0x9c20114120d1d799dbb680564756aa5a3ff1a72b";
+
+var geohashs = [
+    [ 'wx4enzg8crj', 'wx4er9wj99e' ],//3214.310m
+    [ 'wx4envgs3km', 'wx4g298t9c9' ],//6428.834m
+    [ 'wx4enggxc3t', 'wx4g33ej9cx' ],//9642.534m
+    [ 'wx4enf5e1qv', 'wx4g61ttd1t' ],//12857.059m
+    [ 'wx4enb5w9kj', 'wx4g718jd3d' ],//16071.369m
+    [ 'wx4dyy7d13t', 'wx4g7cdtd98' ],//19285.893m
+    [ 'wx4dyu7t3qv', 'wx4gk9tjd9w' ],//22499.593m
+    [ 'wx4dyfe8ckj', 'wx4gm3xtdcs' ],//25713.903m
+    [ 'wx4dybes33m', 'wx4gq3dje1d' ]//28928.428m
+];
+
+//Contract Init
+function initContract() {
+    if (typeof web3 !== 'undefined') {
+	    web3Map = new Web3(web3.currentProvider);
+	} else {
+		web3Map = new Web3(new Web3.providers.WebsocketProvider("ws://127.0.0.1:8546"));
+	}
+	mapContract = new web3Map.eth.Contract(mapContractAbi,mapContractAddress);
+
+	console.log("mapContract", mapContract);
+	console.log("OK!");
+}
+initContract();
+getRoads("wx4er");
+
+async function doAstar(geohash1, geohash2, record){//根据起止点执行智能合约的astar算法
+    let astarTime1 = Date.now();
+    await mapContract.methods.astar(web3Map.utils.asciiToHex(geohash1), web3Map.utils.asciiToHex(geohash2)).call({from: account, gas: 50000000000}).then(function(result){
+        let astarTime2 = Date.now() - astarTime1
+        let countFrag = 0;
+        for(let i = 0; i < result[0].length; i++){
+            if(result[0][i].toString() != "0x0000000000000000000000000000000000000000000000000000000000000000"){
+                countFrag++;
+            }
+        }
+        // console.log("路径规划用时：", astarTime2, "ms");
+        // console.log("astar-result: ",result);
+        let astarOriginRoute = result[0];
+        let costAll = Number(result[1]);
+        let searchNum = Number(result[2]);
+        let gasCost = Number(result[3]);
+        // console.log("车辆行驶距离：", costAll);
+        let astarRoute = [];
+        for(let i = 0; i < result[0].length; i++){
+            if(result[0][i].toString() != "0x0000000000000000000000000000000000000000000000000000000000000000"){
+                let temp = web3Map.utils.hexToAscii(result[0][i]).slice(0, 11)
+                astarRoute.push(temp)
+            }
+            
+        }
+        astarRoute.reverse();
+        console.log("astar: ", astarRoute)
+        //add route point to map
+        let vehicleLayers = [];
+        let vehicleGroup;
+        function draw2(p, q){
+            if(q == astarRoute.length){
+                return 1
+            }
+            function doit2(geohash1, geohash2){
+                console.log("geohash1, geohash2: ", geohash1, geohash2)
+                let route = L.polyline([geohash1,geohash2],{color:"#FFFF00",fillColor:"#FFFF00",fillOpacity:1, weight:7});
+                vehicleLayers.push(route);
+                // map.addLayer(route)
+                // sleep(100)
+            }
+            setTimeout(doit2(astarRoute[p], astarRoute[q]), 0)
+            draw2(p+1, q+1)
+        }
+        draw2(0, 1)
+        vehicleGroup = L.layerGroup(vehicleLayers);
+        map.addLayer(vehicleGroup);
+        
+        record.routeDistance.push(costAll);//导航路径长度
+        record.searchNum.push(searchNum);//算法遍历的路口个数
+        record.gasCost.push(gasCost);//算法消耗的gas
+        record.astarTime.push(astarTime2);//导航算法运行时间
+        record.countFrag.push(countFrag);//算法结果的路段个数
+
+    }, function(err){
+        console.error("astarErr: ", err)
+    })
+}
+
+function getTime() {
+    var t_date = new Date();
+    var t_time = t_date.getTime();            
+    return t_time;
+}
+
+
+function sleep(delay) {
+    var start = new Date().getTime();
+    while (new Date().getTime() < start + delay);
+}
+
+let records = [];
+async function workLoop(){
+    for(let i = 0; i < geohashs.length; i++){
+        let record = {
+            routeDistance: [],
+            searchNum: [],
+            gasCost: [],
+            astarTime: [],
+            countFrag: []
+        }
+        for(let j = 0; j < 10; j++){//每个geohash对执行10遍
+            await doAstar(geohashs[i][0], geohashs[i][1], record)
+        }
+        let res = {};
+		res.routeDistance = record.routeDistance.reduce((pre, cur) => pre + cur) / record.routeDistance.length;
+		res.searchNum = record.searchNum.reduce((pre, cur) => pre + cur) / record.searchNum.length;
+		res.gasCost = record.gasCost.reduce((pre, cur) => pre + cur) / record.gasCost.length;
+		res.astarTime = record.astarTime.reduce((pre, cur) => pre + cur) / record.astarTime.length;
+        res.countFrag = record.countFrag.reduce((pre, cur) => pre + cur) / record.countFrag.length;
+		records.push(res);
+    }
+    console.log("records: ", records);
+}
+
+function drawPoint(points){
+    let layers = [];
+    for(let i = 0; i < points.length; i++){
+        let point = L.polyline([points[i],points[i]],{color:"#0000FF",fillColor:"#0000FF",fillOpacity:1, weight:7});
+        layers.push(point);
+    }
+    let layerGroup = L.layerGroup(layers);
+    map.addLayer(layerGroup);
+}
+
+</script>
+</head>
+<body>
+
+    <table>
+        <tr>
+            <td>
+                开始实验:
+                <button id="startExperiment">startExperiment</button>
+            </td>
+            <td>
+                drawpoint:
+                <button id="drawpoint">drawpoint</button>
+            </td>
+        </tr>
+    </table>
+    <script>
+        let start = "wx4erxbbekd";
+        let end = "wx4er0epekd";
+        // let start = "wx4erp60ekd";
+        // let end = "wx4erpszekd";
+
+        $("#startExperiment").click(function(){
+            // workLoop();
+            doAstar(start, end, {});
+        });
+        $("#drawpoint").click(function(){
+            // workLoop();
+            drawPoint(["wx4ergtx42w","wx4ergts76u","wx4ex04x06d","wx4er5e6z8d","wx4ert1rzkt","wx4ervm2y43","wx4erj7077w","wx4ex0jxc0c","wx4ex0rbhrc","wx4exbkv46w","wx4eprquzcn","wx4er1u4nht","wx4ex834rn9","wx4erx1mwqr","wx4erx1tey7","wx4erx1ehh6","wx4erx17p4w","wx4epxe6qjg","wx4ergtsqdv","wx4eryjrehx","wx4erzjjfs5","wx4erzm062k","wx4erp4c268","wx4ernfy23x","wx4erbnymp5","wx4erbwg05w","wx4ex8347kc","wx4eqcet936","wx4enzu9cyq","wx4ex0jx224","wx4ex0pzwxh","wx4eryjr2vj","wx4eryjr57z","wx4ex833ujv","wx4ex8367yt","wx4enzudkcr","wx4er200z2r","wx4g21u5u6t","wx4er9z5z8b","wx4g21u7yfs","wx4er5et0yy","wx4er5edg63","wx4erp4c7d8","wx4epxedrvu","wx4ex8kdg3u","wx4ex833ztu","wx4er9fm1g8","wx4ere327ut","wx4ere3tbf4","wx4erec6jz1","wx4eref6nrj","wx4erecq444","wx4ert4pgut","wx4erbpn86g","wx4erbwfgwn","wx4erbwg77p","wx4g20sj5kz","wx4ercy7ec7","wx4ergtxjdr","wx4ervm8cd3","wx4ex831zmb","wx4exbku6ry","wx4ex0jry8y","wx4ex0rbnru","wx4ex04x857","wx4ert382x6","wx4ert607xq","wx4ervm91x3","wx4ervm3np3","wx4err0k0bk","wx4ex20pbby","wx4er1u1w8h","wx4enzu3w9q","wx4ert4pk5v","wx4er9zhpr8","wx4erj5p77y","wx4erj5pg6w","wx4ervm2npc","wx4ervm8399","wx4erj70g0w","wx4ervm3wn3","wx4g200j2cz","wx4er1u3dcf","wx4er1u64w7","wx4eprrj3x7","wx4eprrhe3w","wx4eryjrbvv","wx4erzjjvhj","wx4exbkvjsr","wx4er5emjwy","wx4ex04w83f","wx4eqcetufd","wx4eqcevbs6","wx4erj70qgw","wx4ernfy7c8","wx4ex04ws1f","wx4ex04x5fd","wx4er2094jq","wx4er9fgcfd","wx4ex831gk1","wx4ex836x2t","wx4exbkumzy","wx4exbkun1n","wx4ex04w094","wx4ex04wh4f","wx4ex04xee7","wx4eqcetmjd","wx4eqcev2v9","wx4ert1rq7z","wx4ert39180","wx4ert6153y","wx4enzu2z3h","wx4enzu967t","wx4enzu9v4x","wx4ercy7h47","wx4g21u5kmt","wx4ercyk5eu","wx4er9fu3v6","wx4ercyke6u","wx4g21uhskt","wx4g21ujh9u","wx4erj5pr5v","wx4erj5pz4t","wx4erj70yfq","wx4ervm99w3","wx4erzm0f7h","wx4er9fke95","wx4er9zk1ps","wx4ex04wp4g","wx4er9fs5ec","wx4er211g3y","wx4er5edy66","wx4eprrjhzg"]);
+        });
+    </script>
+
+<div id="map"></div>	
+	<script>
+		// setView设置地图放缩大小和中心点
+		var map = L.map('map',{maxZoom:18,minZoom:1}).setView("wx4erx",12);
+	</script>
+
+	<script src="water.js"></script>	
+	<script src="ways.js"></script>
+	<script src="landcover.js"></script>	
+	<script src="railway.js"></script>	
+	<script src="mapConfig.js"></script>
+
+</body>
+</html>

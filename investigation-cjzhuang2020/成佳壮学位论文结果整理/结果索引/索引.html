@@ -1,0 +1,146 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+
+<head>
+</style>
+</head>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>index</title>
+<link href="css/foder.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="js/jquery.min.js"></script>
+<script type="text/javascript">
+
+	$(function() {
+		$(".fla").click(
+				function() {
+					if ($(this).next().css("display") == "none") {
+						$(this).children(".open").removeClass("open").addClass(
+								"close");
+						$(this).children(".pack").removeClass("pack").addClass(
+								"packC");
+						$(this).next().removeClass("none");
+					} else {
+						$(this).children(".close").removeClass("close")
+								.addClass("open");
+						$(this).children(".packC").removeClass("packC")
+								.addClass("pack");
+						$(this).next().addClass("none");
+					}
+				});
+	});
+</script>
+</head>
+<div class="foder">
+	<ul class="ful">
+		<li>
+			<div class="fla">
+				<span class="open btn" id="id1"></span> <span class="pack btn"
+					id="id2"></span> <span class="ftext">1.项目工作结果</span>
+			</div>
+			<ul class="ful none" id="id3">
+				<li>
+					<div class="fla">
+						<span class="open btn"></span> <span class="pack btn"></span> <span
+							class="ftext">1.GeoHashTile复现</span>
+					</div>
+					<ul class="ful none" id="id3">
+						<li>
+							<div>
+								 <a href="../1.项目工作结果/1.GeoHashTile复现/tile地图学习过程.md">tile地图学习过程</a>
+							</div>
+						</li>
+					</ul>
+				</li>
+				
+				<li>
+					<div class="fla">
+						<span class="open btn"></span> <span class="pack btn"></span> <span
+							class="ftext">2.信誉值工作复现</span>
+					</div>
+					<ul class="ful none" id="id3">
+						<li>
+							<div class="fla">
+								<a href="../1.项目工作结果/2.信誉值工作复现/合并吴玥仪工作流程.md">合并吴玥仪工作流程</a>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<div class="fla">
+						<span class="open btn"></span> <span class="pack btn"></span> <span
+							class="ftext">3.osm地图数据获取并转为geohash</span>
+					</div>
+					<ul class="ful none" id="id3">
+						<li>
+							<div class="fla">
+								<a href="../1.项目工作结果/3.osm地图数据获取并转为geohash/docker安装pgrouting过程.md">docker安装pgrouting过程</a>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<div class="fla">
+						<span class="open btn"></span> <span class="pack btn"></span> <span
+							class="ftext">4.调度系统开发</span>
+					</div>
+					<ul class="ful none" id="id3">
+						<li>
+							<div class="fla">
+								<a href="../1.项目工作结果/4.调度系统开发/调度系统开发文档.md">调度系统开发文档</a>
+							</div>
+						</li>
+					</ul>
+				</li>
+				<li>
+					<div class="fla">
+						<span class="open btn"></span> <span class="pack btn"></span> <span
+							class="ftext">5.调度系统自动化过程</span>
+					</div>
+					<ul class="ful none" id="id3">
+						<li>
+							<div class="fla">
+								<a href="../1.项目工作结果/5.调度系统自动化过程/多节点调度系统.md">多节点调度系统</a>
+							</div>
+						</li>
+					</ul>
+				</li>
+			</ul>
+		</li>
+		<li>
+			<div class="fla">
+				<span class="open btn" id="id1"></span> <span class="pack btn"
+					id="id2"></span> <span class="ftext">2.学位论文结果</span>
+			</div>
+			<ul class="ful none" id="id3">
+				
+					<div>
+						<a href="../2.学位论文结果/毕设参考论文">1. 毕设参考论文</a>
+					</div>
+					<div>
+						<a href="../2.学位论文结果/成佳壮-答辩.pptx">2. 成佳壮答辩ppt</a>
+					</div>
+					<div>
+						<a href="../2.学位论文结果/基于地理位置区块链的出租车调度系统设计与实现.pdf">3. 硕士学位论文-基于地理位置区块链的出租车调度系统设计与实现</a>
+					</div>
+					<!-- <div>
+						<a href="../2.学位论文结果/硕士学位论文答辩报告书.doc">5. 答辩报告书</a>
+					</div>
+					<div>
+						<a href="../2.学位论文结果/硕士学位论文答辩委员会组成审核表.doc">6. 答辩委员会组成审核表</a>
+					</div> -->
+				</li>
+
+			</ul>
+		</li>
+		<li>
+		<div class="fla">
+				<a href="../学习经验教训总结-成佳壮.docx">学习经验教训总结-成佳壮.docx</a>
+		</div>
+		</li>
+		
+	</ul>
+</div>
+<body>
+</body>
+</html>

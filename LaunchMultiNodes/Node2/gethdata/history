@@ -1,0 +1,3 @@
+admin.addPeer("enode://51825a4e0dc506e716e1d0b7aa3b27eab62be8154e0071ee107607f517f23ef345668241c15688a7a3b54a2a498ca2bb3a1fb71a628da0694219fe78946bcc60@127.0.0.1:30303?discport=0")
+admin.peers
+net.peerCount

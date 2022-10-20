@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<head>
+    <title id="title">passenger</title>
+
+	<style>
+		html,body{
+			width: 100%;
+			height: 100%;
+		}
+		#row1{float:left;display: inline ;}
+		body{background: #ecf0f1;color: #34495e;text-shadow: white 1px 1px 1px;}.value{text-align: middle;font-weight: bold;width: 210px;line-height: 60px;margin: -18px auto;letter-spacing: -0.07em;text-shadow: white 2px 2px 2px;}input[type="range"] {display: block;-webkit-appearance: none;background-color: #bdc3c7;width: 100%;height: 10px;border-radius: 5px;margin: 5px auto;outline: 0;}input[type="range"]::-webkit-slider-thumb {-webkit-appearance: none;background-color: #e74c3c;width: 30px;height: 30px;border-radius: 50%;border: 2px solid white;cursor: pointer;transition: 0.3s ease-in-out;}.range{position:relative;width:60%;margin:0 auto;} 
+		#map{width: 100%;height:80%}
+	</style>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+	<link rel="stylesheet" href="leaflet.css" />
+	<link rel="stylesheet" href="leaflet.label.css" />
+	<script src="leaflet-src-Geohash.js"></script>
+	<script src="leaflet.label-src.js"></script>
+	<script src="leaflet.label.js"></script>
+	<script src="OSMBuildings-Leaflet.debug.js"></script>
+
+	<script src="./node_modules/web3/dist/web3.min.js"></script>
+	<script src="./node_modules/flatqueue/index.js"></script>
+	<script src="./geohash-new.js"></script>
+	<script src="./geolib.js"></script>
+	<script src="./common.js"></script>
+	<script src="GeohashLayer.GeoJSON.js"></script>
+	<script src="https://s3.pstatp.com/cdn/expire-1-M/jquery/3.2.1/jquery.min.js"></script>
+
+	<script src="./getRoads.js"></script>
+	<script src="./GetHighway.js"></script>
+	<script src="./passengers.js"></script>
+	<script src="./intersections.js"></script>
+	<script src="./gpsarray.js"></script>
+	<script src="./routes.js"></script>
+	<script src="./verifyRecord.js"></script>
+	<script src="./waysall.js"></script>
+	<script src="./gradientColor.js"></script>
+
+	<script  src="./mapContract.js"></script>
+	<script src="./trafficContract.js"></script>
+
+	<script src="a-star-search.js"></script>
+<script type="text/javascript">
+
+//Map contract
+var mapContract;
+var web3Map;
+//Traffic contract
+var trafficContract;
+var web3Traffic;
+
+
+var passengerId;
+var passengerPosition;
+var passengerStart;
+var passengerEnd;
+
+var isboard = false;
+
+var vehicleId;
+var vehiclePosition;
+var passengerPos;
+var costAll;
+
+var isLayer = false;
+var passengerLayers = [];
+var vehicleLayers = [];
+var togetherLayers  = [];
+var passengerGroup;
+var vehicleGroup;
+var togetherGroup;
+
+var positionPoint;
+var startPoint;
+var endPoint;
+
+
+//Contract Init
+function initContract() {
+    if (typeof web3 !== 'undefined') {
+	    web3Map = new Web3(web3.currentProvider);
+	    web3Traffic = new Web3(web3.currentProvider); 
+	} else {
+		web3Map = new Web3(new Web3.providers.WebsocketProvider("ws://127.0.0.1:8546"));
+	    web3Traffic = new Web3(new Web3.providers.WebsocketProvider("ws://127.0.0.1:8546"));
+	}
+	mapContract = new web3Map.eth.Contract(mapContractAbi,mapContractAddress);
+	trafficContract = new web3Traffic.eth.Contract(trafficContractAbi,trafficContractAddress);
+	//passengerEvent
+	trafficContract.events.routeEvent(function(error, event){
+		if(error){
+			console.log("error: ",error);
+		}
+		if(event.returnValues.passengerId.slice(0,42) == passengerId.toLowerCase()){
+			console.log(event);
+			let color = (isboard == false) ? "#FFFF00" : "#00FF00";
+			trafficContract.methods.getRoutes(vehicleId).call({from: passengerId, gas: 500000}).then(function(result){
+				console.log("getRoutes: ",result);
+				let astarRoute = [];
+				costAll = Number(result[1]);
+				for(let i = 0; i < result[0].length; i++){
+					if(result[0][i].toString() != "0x0000000000000000000000000000000000000000000000000000000000000000"){
+						let temp = web3Map.utils.hexToAscii(result[0][i]).slice(0, 11)
+						astarRoute.push(temp)
+					}
+				}
+				astarRoute.reverse()
+				console.log("astar: ", astarRoute)
+				//add route point to map
+				function draw2(p, q){
+					if(astarRoute[p] == astarRoute[q]){
+						let route = L.polyline([astarRoute[p],astarRoute[q]],{color:color,fillColor:color,fillOpacity:1, weight:7});
+						map.addLayer(route);
+						return;
+					}
+					if(q == astarRoute.length){
+						return 1;
+					}
+					function doit2(geohash1, geohash2){
+						console.log("geohash1, geohash2: ", geohash1, geohash2)
+						let route = L.polyline([geohash1,geohash2],{color:color,fillColor:color,fillOpacity:1, weight:7});
+						if(isboard == false){
+							vehicleLayers.push(route);
+						}else{
+							togetherLayers.push(route);
+						}
+						// map.addLayer(route)
+						// sleep(100)
+					}
+					setTimeout(doit2(astarRoute[p], astarRoute[q]), 0)
+					draw2(p+1, q+1)
+				}
+				draw2(0, 1)
+				if(isboard == false){
+					vehicleGroup = L.layerGroup(vehicleLayers);
+					map.addLayer(vehicleGroup);
+				}else{
+					togetherGroup = L.layerGroup(togetherLayers);
+					map.addLayer(togetherGroup);
+				}
+			})
+			if(isboard == false){
+				isboard = true
+				trafficContract.methods.confirmBoard(vehicleId).send({ from: passengerId, gas: 5000000,position:"w3511111111111",txtime:278000}).then(function(result){
+					$("#vehicleEvent").val("乘客确认上车");
+					console.log("乘客确认上车");
+				})
+			}else{
+				$("#vehicleEvent").val("乘客到达目的地");
+				isboard = false;
+			}
+		}
+	})
+
+	//rejectEvent
+	trafficContract.events.rejectEvent(function(error, event){
+		if(error){
+			console.log("error: ",error);
+		}
+		if(event.returnValues.passengerId.slice(0,42) == passengerId.toLowerCase()){
+			console.log(event);
+			$("#vehicleEvent").val("车辆取消了交易");
+			console.log("车辆取消了交易");
+
+		}
+	})
+	console.log("mapContract", mapContract);
+	console.log("trafficContract", trafficContract);
+	console.log("OK!");
+}
+initContract();
+getRoads("wx4e");
+//map
+var map;
+
+function getTime() {
+    var t_date = new Date();
+    var t_time = t_date.getTime();            
+    return t_time;
+}
+
+function getPassengerById(loginId){
+	for(let i = 0; i < passengers.length; i++){
+		if(passengers[i].passengerId == loginId){
+			passengerId = passengers[i].passengerId;
+			passengerStart = passengers[i].passengerStart;
+			passengerEnd = passengers[i].passengerEnd;
+			console.log("获得了乘客信息！");
+		}else{
+			continue;
+		}
+	}
+	// passengerId = loginId;
+	// passengerStart = intersections.splice([Math.floor(Math.random()*(intersections.length))],1)[0];
+	// passengerEnd = intersections.splice([Math.floor(Math.random()*(intersections.length))],1)[0];
+}
+
+async function initPassenger(){
+	if(isLayer == true){
+		map.removeLayer(positionPoint);
+		map.removeLayer(startPoint);
+		map.removeLayer(endPoint);
+		passengerGroup.clearLayers();
+		passengerLayers = [];
+		vehicleGroup.clearLayers();
+		vehicleLayers = [];
+		togetherGroup.clearLayers();
+		togetherLayers = [];
+		isLayer = false;
+	}
+	trafficContract.methods.initPassenger(passengerId, web3Map.utils.asciiToHex(passengerStart)).send({from: passengerId, gas: 500000,position:"w3511111111111",txtime:278000}).then(function(error, result){
+		$("#vehicleEvent").val("乘客位置已记录");
+		console.log("乘客位置已记录")
+
+		//画出乘客的起点
+		startPoint = L.polyline([passengerStart,passengerStart],{color:"#00CCFF",fillColor:"#00CCFF",fillOpacity:1, weight:12});
+		map.addLayer(startPoint);
+		//画出乘客的终点
+		endPoint = L.polyline([passengerEnd,passengerEnd],{color:"#FF0000",fillColor:"#FF0000",fillOpacity:1, weight:12});
+		map.addLayer(endPoint);
+
+		//更新乘客信息
+		trafficContract.methods.setPassengerDemand(passengerId,web3Map.utils.asciiToHex(passengerStart),web3Map.utils.asciiToHex(passengerEnd)).send({ from: passengerId, gas: 5000000,position:"w3511111111111",txtime:278000}).then(function(){
+			$("#vehicleEvent").val("乘客出发点和目的地已记录在智能合约");
+			console.log("乘客出发点和目的地已记录在智能合约");
+			//乘客导航去起点
+		})
+	})
+}
+
+let count = 0;
+async function getVehicle(positionGeohash){
+	let getVehicleTime1 = Date.now()
+	trafficContract.methods.getVehicle(web3Map.utils.asciiToHex(positionGeohash)).call({from: passengerId, gas: 500000000}).then(async function(result1){
+		
+		trafficContract.methods.setVehicleStatus(result1[1], passengerId, web3Map.utils.asciiToHex(positionGeohash)).send({from: passengerId, gas: 5000000,position:"w3511111111111",txtime:278000}).then(function(result2){
+
+			let getVehicleTime2 = Date.now() - getVehicleTime1;
+			console.log("getVehicleTime2: ", getVehicleTime2);
+
+			$("#vehicleEvent").val("车辆选择成功");
+			console.log("车辆选择成功");
+			console.log("getVehicle:",result1);
+			vehiclePosition = web3Map.utils.hexToAscii(result1[0]).slice(0, 11);
+			vehicleId = result1[1].slice(0,42);
+		},function(error2){
+			// console.log("error2: ", error2);
+			count++;
+			if(count < 10){
+				$("#vehicleEvent").val("调度车辆中");
+				console.log("调度车辆中");
+				getVehicle(positionGeohash);
+			}else{
+				$("#vehicleEvent").val("当前没有合适的车辆");
+				console.log("当前没有合适的车辆");
+				count  = 0;
+			}
+		})
+	},function(error1){
+		// console.log("error1: ", error1);
+		count++;
+		if(count < 10){
+			$("#vehicleEvent").val("调度车辆中");
+			console.log("调度车辆中");
+			getVehicle(positionGeohash);
+		}else{
+			$("#vehicleEvent").val("当前没有合适的车辆");
+			console.log("当前没有合适的车辆");
+			count  = 0;
+		}
+	});
+}
+
+async function manageVehicle(){
+	$("#vehicleEvent").val("开始调度车辆");
+	console.log("开始调度车辆")
+	let astarTime1 = Date.now()
+	//返回距离乘客最近的空车的位置
+	getVehicle(passengerStart);
+}
+
+function getOff(){
+	$("#vehicleEvent").val("开始支付订单");
+	console.log("开始支付订单");
+	web3Traffic.eth.sendTransaction({
+		from: passengerId,
+		to: vehicleId,
+		value: 50000000 * costAll,
+		position:"w3511111111111",
+		txtime:278000
+	})
+	.then(function(receipt){
+		trafficContract.methods.confirmPay(vehicleId).send({ from: passengerId, gas: 5000000,position:"w3511111111111",txtime:278000}).then(function(result){
+			$("#vehicleEvent").val("乘客支付了订单");
+			console.log("乘客支付了订单");
+		})
+	});
+}
+
+async function getVehicleStatus(vehicleId){
+	await trafficContract.methods.getVehicleStatus(vehicleId).call({ from: passengerId, gas: 50000000}).then(function(result){
+		console.log("getVehicleStatus: ",result)
+	})
+}
+
+function sleep(delay) {
+    var start = new Date().getTime();
+    while (new Date().getTime() < start + delay);
+}
+
+</script>
+</head>
+<body>
+
+geohash:
+<input type='text' name='hash' id='geohash'/>
+<input type="button" style="width: 120px; height: 30px" value="get roads" onclick="getRoads(document.getElementById('geohash').value)">
+<br/>
+登录乘客信息：
+<input type='text' name='id' id='getPassengerById1'/>
+<input type="button" id='getPassengerById2' style="width: 120px; height: 30px" value="loginPassenger" onclick="getPassengerById(document.getElementById('getPassengerById1').value)">
+
+<table>
+	<tr>
+		<td>
+			初始化合约：
+			<button id="initContract">initContract</button>
+		</td>
+		<td>
+			初始化乘客账户和位置:
+			<button class="initPassenger">initPassenger</button>
+		</td>
+	</tr>
+</table>
+<table>
+	<tr>
+		<td>
+			调度车辆:
+			<button class="manageVehicle">manageVehicle</button>
+		</td>
+		<td>
+			确认下车并付款:
+			<button class="getOff">getOff</button>
+		</td>
+		<td>
+			测试车辆状态:
+			<button class="getVehicleStatus">getVehicleStatus</button>
+		</td>
+	</tr>
+</table>
+<div>
+	<input type="button" id="vehicleEvent" value="" style="width: 300px; height: 40px">
+</div>
+
+<script>
+	$("#initContract").click(function() {
+		initContract();
+	});
+	$(".initPassenger").click(function(){
+		initPassenger();
+	});
+	$(".manageVehicle").click(function(){
+		manageVehicle();
+	});
+	$(".getOff").click(function(){
+		getOff();
+	});
+	$(".getVehicleStatus").click(function(){
+		getVehicleStatus("0x83AE8A8c6e4ef365207738d618A8d5048F64dD77");
+	});
+	$("#initTrace").click(async function(){
+		await initTrace();
+	});
+	$("#printQualityRecord").click(function() {
+		printQualityRecord();
+	});		
+</script>
+
+
+<div id="map"></div>	
+	<script>
+		// setView设置地图放缩大小和中心点
+		var map = L.map('map',{maxZoom:18,minZoom:1}).setView("wx4erp",12);
+	</script>
+
+	<script src="water.js"></script>	
+	<script src="ways.js"></script>
+	<script src="landcover.js"></script>	
+	<script src="railway.js"></script>	
+	<script src="mapConfig.js"></script>
+
+</body>
+</html>
