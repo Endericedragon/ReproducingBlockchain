@@ -1,0 +1,8 @@
+=============== Oct 20, 2022 (CST) ===============
+14:22:30.599694 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+14:22:30.602289 db@open opening
+14:22:30.602481 version@stat F·[] S·0B[] Sc·[]
+14:22:30.610260 db@janitor F·2 G·0
+14:22:30.610527 db@open done T·8.22214ms
+14:22:30.611209 db@close closing
+14:22:30.611239 db@close done T·28.898µs

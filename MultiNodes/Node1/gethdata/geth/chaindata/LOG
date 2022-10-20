@@ -1,0 +1,32 @@
+=============== Oct 20, 2022 (CST) ===============
+17:41:53.526492 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+17:41:53.530549 db@open opening
+17:41:53.532174 version@stat F·[] S·0B[] Sc·[]
+17:41:53.534064 db@janitor F·2 G·0
+17:41:53.534142 db@open done T·3.515933ms
+17:41:53.536185 db@close closing
+17:41:53.536227 db@close done T·42.409µs
+=============== Oct 20, 2022 (CST) ===============
+17:42:10.214497 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+17:42:10.214795 version@stat F·[] S·0B[] Sc·[]
+17:42:10.214820 db@open opening
+17:42:10.214876 journal@recovery F·1
+17:42:10.226687 journal@recovery recovering @1
+17:42:10.230331 memdb@flush created L0@2 N·14 S·889B "HiY..7q\x82,v7":"\xcb\x0f\xfd..\xd3Y\x8c,v4"
+17:42:10.249480 version@stat F·[1] S·889B[889B] Sc·[0.25]
+17:42:10.260021 db@janitor F·3 G·0
+17:42:10.260078 db@open done T·45.248308ms
+17:56:51.448945 db@close closing
+17:56:51.449023 db@close done T·78.023µs
+=============== Oct 20, 2022 (CST) ===============
+18:00:45.592916 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+18:00:45.593800 version@stat F·[1] S·889B[889B] Sc·[0.25]
+18:00:45.593831 db@open opening
+18:00:45.593897 journal@recovery F·1
+18:00:45.599965 journal@recovery recovering @3
+18:00:45.602791 memdb@flush created L0@5 N·1 S·192B "Dat..ion,v16":"Dat..ion,v16"
+18:00:45.610493 version@stat F·[2] S·1KiB[1KiB] Sc·[0.50]
+18:00:45.617075 db@janitor F·4 G·0
+18:00:45.617121 db@open done T·23.266123ms
+18:08:17.014543 db@close closing
+18:08:17.017256 db@close done T·2.719357ms

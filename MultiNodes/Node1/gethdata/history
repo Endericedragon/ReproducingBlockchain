@@ -1,0 +1,6 @@
+
+eth.getBalance(eth.accounts[0])
+admin.nodeInfo.enode
+admin.peers
+net.peerCount
+miner.start()
