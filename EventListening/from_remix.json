@@ -1,0 +1,28 @@
+[
+    {
+        "anonymous": false,
+        "inputs": [
+            {
+                "indexed": false,
+                "internalType": "string",
+                "name": "res",
+                "type": "string"
+            }
+        ],
+        "name": "Myevent",
+        "type": "event"
+    },
+    {
+        "inputs": [
+            {
+                "internalType": "string",
+                "name": "uuid",
+                "type": "string"
+            }
+        ],
+        "name": "setVehicleStatus",
+        "outputs": [],
+        "stateMutability": "nonpayable",
+        "type": "function"
+    }
+]

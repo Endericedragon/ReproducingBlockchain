@@ -1,0 +1,9 @@
+admin.addPeer("enode://bf6ca55d08b44e7ec3d303065d3c3f3ba8bdcd111664f8d477068153f9ff782307dcac8b55ff63f29ed05c668f5e5d25bc38c428054a197106760fe51e3bde79@127.0.0.1:30303?discport=0")
+admin.peers
+eth.accounts
+eth.getBalance(eth.accounts[0])
+admin.peers
+admin.addPeer("enode://bf6ca55d08b44e7ec3d303065d3c3f3ba8bdcd111664f8d477068153f9ff782307dcac8b55ff63f29ed05c668f5e5d25bc38c428054a197106760fe51e3bde79@127.0.0.1:30303?discport=0")
+admin.peers
+admin.addPeer("enode://bf6ca55d08b44e7ec3d303065d3c3f3ba8bdcd111664f8d477068153f9ff782307dcac8b55ff63f29ed05c668f5e5d25bc38c428054a197106760fe51e3bde79@127.0.0.1:30303?discport=0")
+admin.peers
