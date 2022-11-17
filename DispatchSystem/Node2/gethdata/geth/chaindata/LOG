@@ -1,0 +1,42 @@
+=============== Nov 16, 2022 (CST) ===============
+20:05:37.851262 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:05:37.859363 db@open opening
+20:05:37.862034 version@stat F·[] S·0B[] Sc·[]
+20:05:37.864362 db@janitor F·2 G·0
+20:05:37.864444 db@open done T·4.941895ms
+20:05:37.866159 db@close closing
+20:05:37.866312 db@close done T·150.34µs
+=============== Nov 16, 2022 (CST) ===============
+20:05:37.992292 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+20:05:37.992931 version@stat F·[] S·0B[] Sc·[]
+20:05:37.993127 db@open opening
+20:05:37.993263 journal@recovery F·1
+20:05:38.022182 journal@recovery recovering @1
+20:05:38.028486 memdb@flush created L0@2 N·10 S·620B "H\x87\xe1..\x1a\xf1\x9a,v3":"r\x00\x00..\x1a\xf1\x9a,v5"
+20:05:38.046507 version@stat F·[1] S·620B[620B] Sc·[0.25]
+20:05:38.052774 db@janitor F·3 G·0
+20:05:38.052996 db@open done T·59.788999ms
+=============== Nov 17, 2022 (CST) ===============
+16:20:50.072396 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+16:20:50.072650 version@stat F·[1] S·620B[620B] Sc·[0.25]
+16:20:50.072711 db@open opening
+16:20:50.072771 journal@recovery F·1
+16:20:50.087559 journal@recovery recovering @3
+16:20:50.101064 memdb@flush created L0@5 N·2334 S·126KiB "Dat..ion,v12":"r\x00\x00..[\r\x92,v2341"
+16:20:50.110756 version@stat F·[2] S·127KiB[127KiB] Sc·[0.50]
+16:20:50.117261 db@janitor F·4 G·0
+16:20:50.117406 db@open done T·44.644473ms
+16:20:55.350531 db@close closing
+16:20:55.350793 db@close done T·256.471µs
+=============== Nov 17, 2022 (CST) ===============
+16:20:59.544391 log@legend F·NumFile S·FileSize N·Entry C·BadEntry B·BadBlock Ke·KeyError D·DroppedEntry L·Level Q·SeqNum T·TimeElapsed
+16:20:59.544786 version@stat F·[2] S·127KiB[127KiB] Sc·[0.50]
+16:20:59.544895 db@open opening
+16:20:59.545033 journal@recovery F·1
+16:20:59.554611 journal@recovery recovering @6
+16:20:59.558007 memdb@flush created L0@8 N·1 S·216B "Las..ock,v2347":"Las..ock,v2347"
+16:20:59.567422 version@stat F·[3] S·127KiB[127KiB] Sc·[0.75]
+16:20:59.575343 db@janitor F·5 G·0
+16:20:59.575448 db@open done T·30.505223ms
+17:43:19.983337 db@close closing
+17:43:19.983587 db@close done T·246.147µs
