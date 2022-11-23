@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+    <script src="./node_modules/web3/dist/web3.min.js"></script>
+    <script src="./geohash.js"></script>
+    <script src="./geolib.js"></script>
+    <script src="./common.js"></script>
+
+</head>
+<body>
+    <div class="container">
+
+        <h1>UUID</h1>
+        <h2 id="uuid"></h2>
+
+        <h1>GPS Info</h1>
+
+        <h2 id="myinfo"></h2>
+
+        <h1>GeoHash Info</h1>
+
+        <h2 id="geohash"></h2>
+        
+        <button id="update">update my info</button>
+
+
+        <input id="latitude" type="text">
+        <input id="longitude" type="text">
+
+        <button id="calculate1">calculate geohash</button>
+
+        <h2 id="geohash2"></h2>
+
+
+
+        <input id="geohash3" type="text">
+
+        <button id="calculate2">calculate gps</button>
+
+        <h2 id="gps"></h2>
+        <h2 id="latBase32"></h2>
+        <h2 id="lonBase32"></h2>
+        <h2 id="latDelta"></h2>
+        <h2 id="lonDelta"></h2>        
+        <h2 id="hashbase32"></h2>
+        
+        <button id="calculate3">calculate neighbor</button>
+
+        <h2 id="neighbor"></h2>
+
+
+        <input id="disgeohash1" type="text">
+        <input id="disgeohash2" type="text">
+        <button id="calchashdis">calculate distance</button>
+
+        <h2 id="geohashdis"></h2>
+
+        <input id="mgeohash1" type="text">
+        <input id="mgeohash2" type="text">
+        <button id="calchashm">calculate manhattan</button>
+        <h2 id="geohashm"></h2>
+
+        <input id="l1" type="text">
+        <input id="l2" type="text">
+        <input id="p" type="text">
+        <button id="calcl">calculate objection</button>
+
+        <h2 id="objection"></h2>        
+
+
+        <h1>Calculation</h1>
+
+        <input id="latitude1" type="text">
+        <input id="longitude1" type="text">     
+        <input id="latitude2" type="text">
+        <input id="longitude2" type="text">    
+
+        <button id="cal_dis_gps">calculate dis by gps</button>   
+        <h2 id="dis_gps"></h2>    
+
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+    <script>
+        var latitude = 0.0;
+        var longitude = 0.0;
+        var id = -1;
+        var total = 0;
+
+
+        $("#uuid").html(generateUUID());
+
+        $("#myinfo").html('Loading location ... ');
+
+        function getLocation() {
+              if (navigator.geolocation) { 
+                navigator.geolocation.getCurrentPosition(showPosition);
+            } else {
+                x.innerHTML="Geolocation is not supported by this browser.";
+            }
+        }
+
+        function showPosition(position) {
+            latitude = position.coords.latitude;
+            longitude = position.coords.longitude
+              //x.innerHTML="Latitude: " + position.coords.latitude + 
+              //            "<br />Longitude: " + position.coords.longitude;    
+            $("#myinfo").html('latitude:'+ latitude+' longitude:'+ longitude+' ( ' + getTime() + ' )');
+            console.log(position.coords.latitude);
+            console.log(position.coords.longitude);
+        }
+
+        function getTime() {
+            var t_date = new Date();
+            var t_time = t_date.getTime();            
+            return t_time;
+        }
+
+        getLocation();
+
+
+        
+        $("#update").click(function() {
+        	getLocation();
+            
+            var t_time = getTime();          
+            console.log(t_time);
+
+            var geoHash = encode_geohash(longitude,latitude);
+
+            console.log(geoHash);
+
+            $("#geohash").html(geoHash);
+        });
+
+        $("#calculate1").click(function() {
+            console.log($("#latitude").val());
+            console.log($("#longitude").val());   
+            var geoHash =  encode_geohash($("#longitude").val(),$("#latitude").val());   
+            console.log(geoHash); 
+
+            $("#geohash2").html(geoHash);    
+        });
+
+        $("#calculate2").click(function() {
+            //console.log($("#geohash3").val());           
+            ans = decode_geohash($("#geohash3").val());
+
+            //console.log(ans); 
+
+            $("#gps").html(ans[0] + ' ' + ans[1] + ' ' + ans[2] + ' ' + ans[3]);   
+
+            //$("#latBase32").html(getLatBase32($("#geohash3").val()));
+            //$("#lonBase32").html(getLonBase32($("#geohash3").val()));
+            $("#latDelta").html(getLatDelta($("#geohash3").val()));
+            $("#lonDelta").html(getLonDelta($("#geohash3").val()));
+
+            var geohashBase32 = getBase32($("#geohash3").val());
+            //$("#hashbase32").html(geohashBase32[0] + ' ' + geohashBase32[1]);
+
+            //console.log(getLatDelta($("#geohash3").val()));
+            //console.log(getLonDelta($("#geohash3").val()));
+        });        
+
+        $("#calcl").click(function() {
+
+            var ans = getProjection($("#l1").val(), $("#l2").val(), $("#p").val());
+            $("#objection").html(ans);
+        })
+
+        $("#calchashdis").click(function() {
+            var dis = getDistanceByGeohash($("#disgeohash1").val(),$("#disgeohash2").val());   
+            console.log(dis); 
+
+            $("#geohashdis").html(dis);    
+        });        
+
+        $("#calchashm").click(function() {
+            var dis = getManhattanByGeohash($("#mgeohash1").val(),$("#mgeohash2").val());   
+            console.log(dis); 
+
+            $("#geohashm").html(dis);    
+        }); 
+
+        $("#calculate3").click(function() {
+            console.log($("#geohash3").val());           
+            ans = getNeighbour($("#geohash3").val());
+
+            console.log(ans); 
+
+            $("#neighbor").html(ans[0] + ' ' + ans[1] + ' ' + ans[2] + ' ' + ans[3] + ' ' + ans[4] + ' ' + ans[5] + ' ' + ans[6] + ' ' + ans[7]);    
+        });      
+
+        $("#cal_dis_gps").click(function() {
+            dis = getDistanceBtwP($("#latitude1").val(),$("#longitude1").val(),$("#latitude2").val(),$("#longitude2").val())
+
+            $("#dis_gps").html(dis);    
+        });                  
+        
+    </script>
+
+</body>
+</html>

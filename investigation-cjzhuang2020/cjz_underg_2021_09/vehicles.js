@@ -1,0 +1,1 @@
+let vehicles = [{"vehicleId":"0x83AE8A8c6e4ef365207738d618A8d5048F64dD77","vehiclePosition":"wx4enge9c6j"},{"vehicleId":"0x36De6590DE6d52149e93afef364374B6D07D86fB","vehiclePosition":"wx4env5dc2j"},{"vehicleId":"0xBd3EE214c3E507b920CB35180019F3bBFB452210","vehiclePosition":"wx4enyee9mv"},{"vehicleId":"0x806475BF8487a1b710D3422D789c3Fa0fF1fCaC6","vehiclePosition":"wx4eqb5s97v"}]

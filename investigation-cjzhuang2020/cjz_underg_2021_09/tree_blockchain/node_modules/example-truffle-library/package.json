@@ -1,0 +1,80 @@
+{
+  "_args": [
+    [
+      {
+        "raw": "https://github.com/ConsenSys/example-truffle-library",
+        "scope": null,
+        "escapedName": null,
+        "name": null,
+        "rawSpec": "https://github.com/ConsenSys/example-truffle-library",
+        "spec": "git+https://github.com/ConsenSys/example-truffle-library.git",
+        "type": "hosted",
+        "hosted": {
+          "type": "github",
+          "ssh": "git@github.com:ConsenSys/example-truffle-library.git",
+          "sshUrl": "git+ssh://git@github.com/ConsenSys/example-truffle-library.git",
+          "httpsUrl": "git+https://github.com/ConsenSys/example-truffle-library.git",
+          "gitUrl": "git://github.com/ConsenSys/example-truffle-library.git",
+          "shortcut": "github:ConsenSys/example-truffle-library",
+          "directUrl": "https://raw.githubusercontent.com/ConsenSys/example-truffle-library/master/package.json"
+        }
+      },
+      "/home/zyu/block_chain/conference"
+    ]
+  ],
+  "_from": "git+https://github.com/ConsenSys/example-truffle-library.git",
+  "_id": "example-truffle-library@1.0.0",
+  "_inCache": true,
+  "_location": "/example-truffle-library",
+  "_phantomChildren": {},
+  "_requested": {
+    "raw": "https://github.com/ConsenSys/example-truffle-library",
+    "scope": null,
+    "escapedName": null,
+    "name": null,
+    "rawSpec": "https://github.com/ConsenSys/example-truffle-library",
+    "spec": "git+https://github.com/ConsenSys/example-truffle-library.git",
+    "type": "hosted",
+    "hosted": {
+      "type": "github",
+      "ssh": "git@github.com:ConsenSys/example-truffle-library.git",
+      "sshUrl": "git+ssh://git@github.com/ConsenSys/example-truffle-library.git",
+      "httpsUrl": "git+https://github.com/ConsenSys/example-truffle-library.git",
+      "gitUrl": "git://github.com/ConsenSys/example-truffle-library.git",
+      "shortcut": "github:ConsenSys/example-truffle-library",
+      "directUrl": "https://raw.githubusercontent.com/ConsenSys/example-truffle-library/master/package.json"
+    }
+  },
+  "_requiredBy": [
+    "#USER"
+  ],
+  "_resolved": "git+https://github.com/ConsenSys/example-truffle-library.git#9f9dccaa2aea125470c16f21af9a0023180e4610",
+  "_shasum": "8c7c1de678c7e5772a85a497b23c5d889f5fd460",
+  "_shrinkwrap": null,
+  "_spec": "https://github.com/ConsenSys/example-truffle-library",
+  "_where": "/home/zyu/block_chain/conference",
+  "author": {
+    "name": "Tim Coulter",
+    "email": "tim@timothyjcoulter.com",
+    "url": "http://timothyjcoulter.com"
+  },
+  "dependencies": {
+    "web3": "^0.16.0"
+  },
+  "description": "Example project showing how to use Truffle to build libraries",
+  "devDependencies": {
+    "bip39": "^2.2.0",
+    "ethereumjs-wallet": "^0.6.0",
+    "web3-provider-engine": "^8.0.4"
+  },
+  "gitHead": "9f9dccaa2aea125470c16f21af9a0023180e4610",
+  "license": "MIT",
+  "main": "index.js",
+  "name": "example-truffle-library",
+  "optionalDependencies": {},
+  "readme": "ERROR: No README data found!",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "1.0.0"
+}

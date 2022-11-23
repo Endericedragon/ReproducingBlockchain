@@ -1,0 +1,112 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Leaflet_blockchain</title>
+	<style>
+		html,body{
+			width: 100%;
+			height: 100%;
+		}
+		#mapDiv{
+			width: 100%;
+			height: 100%;
+		}		
+	</style>
+
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <link rel="stylesheet" type="text/css" href="main.css">
+
+	<link rel="stylesheet" href="leaflet.css" />
+	<link rel="stylesheet" href="leaflet.label.css" />
+	<script src="leaflet-src.js"></script>
+	<script src="TileLayer.GeoJSON.js"></script>	
+	<script src="leaflet.label-src.js"></script>
+	<script src="leaflet.label.js"></script>
+	<script src="OSMBuildings-Leaflet.debug.js"></script>
+
+    <script src="./node_modules/web3/dist/web3.min.js"></script>
+    <script src="./geohash.js"></script>
+    <script src="./geolib.js"></script>
+    <script src="./common.js"></script>
+    <script src="./mycontract.js"></script>
+	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+
+	<script src="./gpsarray.js"></script>
+	<script src="./waytest.js"></script>
+
+
+	
+</head>
+<body>
+	<input id="l1" type="text">
+    <input id="l2" type="text">	
+    <button id="line">paintline</button>
+
+    <input id="p" type="text">
+    <button id="point">paintpoint</button>
+
+	<input id="aaa" type="text">
+    <button id="area">paintarea</button>    
+
+	<div id="mapDiv" style="width:800px; height:600px"></div>
+	<script>
+	//	<form>
+  //  	<input type="button" id="online_test" onclick="test_online();" value="实时数据探测"/>
+  //  </form>
+	//	<form>
+  //  	<input type="button" id="offline_test" onclick="test_offline();" value="本地数据测试"/>
+  //  </form>
+ // <TEXTAREA id='info' ROWS="10" COLS="60" readOnly="true"></TEXTAREA><br/>
+  
+		var map = L.map("mapDiv").setView([39.95844857,116.31668809],13);
+		L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{attribution:'&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'}).addTo(map);
+
+		//var markers=[[36.55,117.32]]
+		//for (i=0;i<markers.length;i++){
+    	//	L.marker(markers[i]).addTo(map)
+		//}
+		
+		//var point = L.circle([36.55,117.32],10,{color:'#FF0000',fillColor:'#FF0000',fillOpacity:1});
+		//map.addLayer(point);
+		//map.removeLayer(point);
+		$("#point").click(function() {
+			var dec = decode_geohash($("#p").val());
+			var lon = (dec[0] + dec[1]) / 2;
+			var lat = (dec[2] + dec[3]) / 2;
+
+			console.log(lon, lat);
+
+			var point = L.circle([lat, lon],10,{color:'#FF0000',fillColor:'#FF0000',fillOpacity:1});
+			map.addLayer(point);
+
+		});
+		$("#line").click(function() {
+			var dec1 = decode_geohash($("#l1").val());
+			var lon1 = (dec1[0] + dec1[1]) / 2;
+			var lat1 = (dec1[2] + dec1[3]) / 2;
+			var dec2 = decode_geohash($("#l2").val());
+			var lon2 = (dec2[0] + dec2[1]) / 2;
+			var lat2 = (dec2[2] + dec2[3]) / 2;			
+
+			var latlngs = [[lat1, lon1], [lat2, lon2]];
+			var polyline = L.polyline(latlngs, {color: 'blue'}).addTo(map);		
+		});
+		$("#area").click(function() {
+			var dec = decode_geohash($("#aaa").val());
+			var lon1 = dec[0];
+			var lat1 = dec[2];
+			var lon2 = dec[1];
+			var lat2 = dec[3];			
+
+			console.log(dec);
+			var latlngs = [[lat1, lon1], [lat1, lon2], [lat2, lon2],[lat2, lon1],[lat1, lon1]];
+			var polyline = L.polyline(latlngs, {color: 'blue'}).addTo(map);		
+		});		
+
+
+	</script>
+</body>
+</html>
