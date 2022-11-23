@@ -61,7 +61,7 @@ node1 = childProcess.exec(
         sleep(1000);
 
         web3 = new Web3(new Web3.providers.HttpProvider("http://localhost:8545"));
-        accountConfig(30, 15, 15);
+        accountConfig(8, 4, 4);
     }
 )
 //三个参数，第一个是一共生成多少新账户，第二个是分配给passenger的账户数量，第三个参数是分配给vehicle的账户数量
@@ -70,9 +70,9 @@ async function accountConfig(accountNumber, passengerNumber, vehicleNumber) {
     for (let i = 0; i < accountNumber; i++) {
         task.push(creatAccount())
     }
-    Promise.all(task).then(function (result1) {
+    Promise.all(task).then((result1) => {
         console.log("result1: ", result1);
-        web3.eth.getAccounts().then(function (result2) {
+        web3.eth.getAccounts().then((result2) => {
             console.log("result2: ", result2);
             for (let i = 0; i < result2.length; i++) {
                 genesis.alloc[result2[i]] = { "balance": "50000000000000000000000000000000000000000", "position": "test0123456789", "txtime": 1 }
@@ -104,11 +104,13 @@ async function accountConfig(accountNumber, passengerNumber, vehicleNumber) {
             // fs.writeFile(vehiclePositionFile,"let vehicles = "+JSON.stringify(vehicles),{flag:'a',encoding:'utf-8',mode:'0666'},function(err){});
 
         })
-    })
+    }).catch((err) => { console.log(err); })
 }
 
 async function creatAccount() {
-    return await web3.eth.personal.newAccount('123456').then(console.log);
+    return await web3.eth.personal.newAccount('123456').then((res) => {
+        return res;
+    }).catch((err) => { console.err(err); });
 }
 // web3 = new Web3(new Web3.providers.WebsocketProvider("ws://127.0.0.1:8546"));
 // web3.eth.personal.newAccount('123456').then(console.log);

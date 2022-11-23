@@ -1,4 +1,5 @@
 # coding=UTF-8
+from vehicleAccounts import vehicles
 from selenium import webdriver
 from selenium.webdriver.common import action_chains
 from selenium.webdriver.common.by import By
@@ -17,31 +18,31 @@ reload(sys)
 
 # chrome_options = webdriver.ChromeOptions()
 # chrome_options.add_argument('--auto-open-devtools-for-tabs')
-from vehicleAccounts import vehicles
 
-def vehicleClient(vehicleId,index):
+
+def vehicleClient(vehicleId, index):
     wd2 = webdriver.Chrome('/usr/bin/chromedriver')
     wd2.get('file:///'+os.path.abspath('sys_vehicle_region.html'))
-    wd2.set_window_size(300,520)
+    wd2.set_window_size(300, 520)
     wd2.set_window_position(470*index, 550)
 
-    js='document.getElementById("title").value = "vehicle"'
+    js = 'document.getElementById("title").value = "vehicle"'
     wd2.execute_script(js)
 
-    wd2.find_element_by_id('getVehicleById1').send_keys(vehicleId)
-    wd2.find_element_by_id('getVehicleById2').click()
+    wd2.find_element(by=By.ID, value='getVehicleById1').send_keys(vehicleId)
+    wd2.find_element(by=By.ID, value='getVehicleById2').click()
 
     # 初始化车辆位置信息
     time.sleep(1)
-    wd2.find_element_by_class_name('initVehicle').click()
+    wd2.find_element(by=By.CLASS_NAME, value='initVehicle').click()
 
     # 直接滚动到底部
-    js="var q=document.documentElement.scrollTop=10000"
+    js = "var q=document.documentElement.scrollTop=10000"
     wd2.execute_script(js)
     # 车辆工作时间是300秒
     time.sleep(300)
     # 车辆注销id
-    wd2.find_element_by_id('deleteVehicle').click()
+    wd2.find_element(by=By.ID, value='deleteVehicle').click()
     time.sleep(5)
 
     # 监听打车请求
@@ -65,13 +66,13 @@ def vehicleClient(vehicleId,index):
     # locator3 = ("id","Myevent")
     # text3 = "vehicle reached the end"
     # wait.until(EC.text_to_be_present_in_element_value(locator3, text3))
-    
+
 
 if __name__ == '__main__':
     pool = []
     print(len(vehicles))
-    for index,vehicle in enumerate(vehicles):
-        oneVehicle = Process(target=vehicleClient, args=(vehicle,index,))
+    for index, vehicle in enumerate(vehicles):
+        oneVehicle = Process(target=vehicleClient, args=(vehicle, index,))
         pool.append(oneVehicle)
 
     for one in pool:
@@ -81,6 +82,3 @@ if __name__ == '__main__':
 # locator3 = ("id","Myevent")
 # text3 = "vehicle reached the end"
 # wait.until(EC.text_to_be_present_in_element_value(locator3, text3))
-
-
-
