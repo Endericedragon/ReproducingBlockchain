@@ -1,4 +1,4 @@
-var mapContractAddress = "0x0311d0c7f879fb34fe0a10233f4e7241ff5b7382";
+var mapContractAddress = "0x5bdcb6a89c990b0c82ba78f38716ad46a17049fc";
 var mapContractServer = 'http://localhost:8545';//of no use
 var mapContractAbi = [
 	{

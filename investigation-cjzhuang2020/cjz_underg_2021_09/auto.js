@@ -77,7 +77,7 @@ async function accountConfig(accountNumber, passengerNumber, vehicleNumber) {
             for (let i = 0; i < result2.length; i++) {
                 genesis.alloc[result2[i]] = { "balance": "50000000000000000000000000000000000000000", "position": "test0123456789", "txtime": 1 }
             }
-            fs.writeFile(genesisFile, JSON.stringify(genesis), { flag: 'a', encoding: 'utf-8', mode: '0666' }, function (err) { });
+            fs.writeFile(genesisFile, JSON.stringify(genesis), { flag: 'w', encoding: 'utf-8', mode: '0666' }, function (err) { });
 
             let passengerAccounts = [];
             let vehicleAccounts = [];
@@ -98,8 +98,8 @@ async function accountConfig(accountNumber, passengerNumber, vehicleNumber) {
                     vehiclePosition: vehiclePosition
                 })
             }
-            fs.writeFile(passengerFile, "passengers = " + JSON.stringify(passengerAccounts), { flag: 'a', encoding: 'utf-8', mode: '0666' }, function (err) { });
-            fs.writeFile(vehicleFile, "vehicles = " + JSON.stringify(vehicleAccounts), { flag: 'a', encoding: 'utf-8', mode: '0666' }, function (err) { });
+            fs.writeFile(passengerFile, "passengers = " + JSON.stringify(passengerAccounts), { flag: 'w', encoding: 'utf-8', mode: '0666' }, function (err) { });
+            fs.writeFile(vehicleFile, "vehicles = " + JSON.stringify(vehicleAccounts), { flag: 'w', encoding: 'utf-8', mode: '0666' }, function (err) { });
 
             // fs.writeFile(vehiclePositionFile,"let vehicles = "+JSON.stringify(vehicles),{flag:'a',encoding:'utf-8',mode:'0666'},function(err){});
 
@@ -110,7 +110,7 @@ async function accountConfig(accountNumber, passengerNumber, vehicleNumber) {
 async function creatAccount() {
     return await web3.eth.personal.newAccount('123456').then((res) => {
         return res;
-    }).catch((err) => { console.err(err); });
+    }).catch((err) => { console.error(err); });
 }
 // web3 = new Web3(new Web3.providers.WebsocketProvider("ws://127.0.0.1:8546"));
 // web3.eth.personal.newAccount('123456').then(console.log);

@@ -36,14 +36,14 @@ def vehicleClient(vehicleId, index):
     time.sleep(1)
     wd2.find_element(by=By.CLASS_NAME, value='initVehicle').click()
 
-    # 直接滚动到底部
-    js = "var q=document.documentElement.scrollTop=10000"
-    wd2.execute_script(js)
-    # 车辆工作时间是300秒
-    time.sleep(300)
-    # 车辆注销id
-    wd2.find_element(by=By.ID, value='deleteVehicle').click()
-    time.sleep(5)
+    # # 直接滚动到底部
+    # js = "var q=document.documentElement.scrollTop=10000"
+    # wd2.execute_script(js)
+    # # 车辆工作时间是300秒
+    time.sleep(600)
+    # # 车辆注销id
+    # wd2.find_element(by=By.ID, value='deleteVehicle').click()
+    # time.sleep(5)
 
     # 监听打车请求
     # locator1 = ("id","Myevent")

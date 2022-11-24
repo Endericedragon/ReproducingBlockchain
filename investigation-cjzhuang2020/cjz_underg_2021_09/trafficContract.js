@@ -1,5 +1,4 @@
-//Traffic contract
-var trafficContractAddress = '0x6b55790784cf14458e9faeaf47a26b13eb4150bd';
+var trafficContractAddress = '0x1249f7546f04ac60d83f15bdfc7030affe457612';
 var trafficContractServer = 'http://localhost:8545';//of no use
 var trafficContractAbi = [
 	{

@@ -55,7 +55,7 @@ def passengerClient(passengerId, index):
     # 确认到达目的地之后付款
     locator2 = ("id", "vehicleEvent")
     text2 = "乘客到达目的地"
-    wait = WebDriverWait(wd1, 100, 1)
+    wait = WebDriverWait(wd1, 99999, 1)
     wait.until(EC.text_to_be_present_in_element_value(locator2, text2))
     # 开始付款
     wd1.find_element(by=By.CLASS_NAME, value='getOff').click()
