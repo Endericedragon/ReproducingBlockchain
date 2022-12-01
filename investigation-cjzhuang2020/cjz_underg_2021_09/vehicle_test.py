@@ -74,6 +74,7 @@ if __name__ == '__main__':
     for index, vehicle in enumerate(vehicles):
         oneVehicle = Process(target=vehicleClient, args=(vehicle, index,))
         pool.append(oneVehicle)
+        break
 
     for one in pool:
         one.start()

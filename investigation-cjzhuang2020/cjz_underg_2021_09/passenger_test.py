@@ -85,6 +85,7 @@ def workConfig(requestNum, requestInterval):
         onePassenger = Process(target=workLoop, args=(
             passenger, index, requestNum, requestInterval,))
         pool.append(onePassenger)
+        break
     for one in pool:
         one.start()
         time.sleep(2)

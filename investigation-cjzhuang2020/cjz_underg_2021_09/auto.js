@@ -50,7 +50,7 @@ var genesis = {
 }
 
 node1 = childProcess.exec(
-    "gnome-terminal -e 'bash -c \"cd ~; cd 文档; cd ReproducingBlockchain; cd DispatchSystem; cd Node1; geth1 --datadir ./gethdata --networkid 91036 --port 30303 --rpc --rpcaddr 127.0.0.1 --rpcport 8545 --rpcapi 'personal,net,eth,web3,admin' --rpccorsdomain='*' --ws --wsaddr='localhost' --wsport 8546 --wsorigins='*' --wsapi 'personal,net,eth,web3,admin' --nodiscover --allow-insecure-unlock --dev.period 1 --syncmode='full' console; exec bash\"'",
+    "gnome-terminal -e 'bash -c \"cd ~; cd 文档; cd ReproducingBlockchain; cd DispatchSystem; geth1 --datadir ./gethdata --networkid 91036 --port 30303 --rpc --rpcaddr 127.0.0.1 --rpcport 8545 --rpcapi 'personal,net,eth,web3,admin' --rpccorsdomain='*' --ws --wsaddr='localhost' --wsport 8546 --wsorigins='*' --wsapi 'personal,net,eth,web3,admin' --nodiscover --allow-insecure-unlock --dev.period 1 --syncmode='full' console; exec bash\"'",
     async function (error, stdout, stderr) {
         if (stderr) {
             console.log(stderr);

@@ -7,8 +7,8 @@ var MyContract = contract(json);
 MyContract.setProvider(new Web3.providers.HttpProvider("http://localhost:8545"));
 
 // contract address 
-var myContractInstance = MyContract.at("0x5bdcb6a89c990b0c82ba78f38716ad46a17049fc");
-var account = "0x8f3186fa077d1cab57a3dd57394e07c59496cca5";
+var myContractInstance = MyContract.at("0x2efd384f692c5b11b10ce3e3c0ce261b65b9debc");
+var account = "0xd89600f0a428205e31f8a51601b0205bd0adb0b7";
 
 // read map in json format
 var fs = require('fs');
