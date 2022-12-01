@@ -7,7 +7,7 @@ var MyContract = contract(json);
 MyContract.setProvider(new Web3.providers.HttpProvider("http://localhost:8545"));
 
 // contract address 
-var myContractInstance = MyContract.at("0x6961b2990f2104929ca2e75de2327cbd8d3ebaa0");
+var myContractInstance = MyContract.at("0xef00ade84bb560afe4b562bfd4a81300c17ac52f");
 var account = "0xc4daf5624c88bc71e581488a4046209b7f4ba9b8";
 
 // read map in json format
@@ -27,7 +27,7 @@ let roads = obj.features;
 
 function uploadCountPerBlock() {
 	let partTask = [];
-	let loopNum = 1;
+	let loopNum = 128;  // Upload ${loopnum} roads at one time
 
 	for (let i = 0; i < loopNum; i++) {
 		partTask.push(add_map(roads[counter]));
