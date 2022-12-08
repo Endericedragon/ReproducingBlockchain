@@ -53,19 +53,14 @@ geth1 --datadir ./gethdata --networkid 91036 --port 30303 --rpc --rpcaddr 127.0.
 在01步骤中打开的控制台中输入如下指令：
 
 ```js
-personal.newAccount("123456")
+for (i = 0; i < 4; i++) { personal.newAccount("123456") }
 
-personal.unlockAccount(eth.accounts[0],"123456",15000)
-personal.unlockAccount(eth.accounts[1],"123456",15000)
-personal.unlockAccount(eth.accounts[2],"123456",15000)
-personal.unlockAccount(eth.accounts[3],"123456",15000)
+for (i = 0; i < 4; i++) { personal.unlockAccount(eth.accounts[i],"123456",15000) }
 
 eth.getBalance(eth.accounts[0])
 ```
 
-**！不明晰点！在执行第4行的指令时遇到报错，大意是eth.accounts[1]是nil。**
-
-解决方法：目前节点中确实仅存在一个账户。故第1行的指令应该再执行3遍，以创建总计4个账户。四个账户的`password`如下：
+在笔者的实验中，四个账户的地址如下：
 
 ```
 0xdfc9a16294fb9bf434c4d3b0d94e09b456df8328
@@ -74,7 +69,7 @@ eth.getBalance(eth.accounts[0])
 0x9a7304d35593740d33596696cef86b0e6481cd54
 ```
 
-为它们在创始块中增加余额：
+为它们在创世块中增加余额：
 
 ```json
 // genesis.json
@@ -154,7 +149,7 @@ contract TestContract {
 
 # 04将上述合约部署到geth创建的私有链上
 
-接下来，我们需要部署上述合约。
+接下来，我们需要部署上述合约。《6 多节点树状区块链的部署》中，有更详细的部署合约的过程。
 
 
 
@@ -239,6 +234,6 @@ contract TestContract {
 
   无报错，确认已经将合约部署到链上了。
   
-  # 05 测试
-  
-  遗憾的是，笔者暂且未找到改变车辆状态的方法，故暂时无法看到效果。该部分将在未来补充完整。
+# 05 测试
+
+  遗憾的是，笔者暂且未找到改变车辆状态的方法，故暂时无法看到效果。该部分可能在未来补充完整。
